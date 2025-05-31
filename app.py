@@ -50,14 +50,17 @@ if uploaded_file:
 
         # 🧾 결과 출력
         df_result = df.copy()
-        df_result["예측결과"] = result_label
-        df_result["무확률"] = proba_ensemble[:, 0].round(3)
-        df_result["승확률"] = proba_ensemble[:, 1].round(3)
-        df_result["패확률"] = proba_ensemble[:, 2].round(3)
-
+        df_result["result"] = result_label
+        df_result["승확률"] = proba_ensemble[:, label_map["승"]].round(3)
+        df_result["무확률"] = proba_ensemble[:, label_map["무"]].round(3)
+        df_result["패확률"] = proba_ensemble[:, label_map["패"]].round(3)
+        
+        # 결과 정리
+        df_output = df_result[["name", "type", "hand", "result", "승확률", "무확률", "패확률"]]
+        
         st.success("✅ 예측 완료!")
-        st.dataframe(df_result)
-
-        # 📥 결과 다운로드
-        csv = df_result.to_csv(index=False).encode("utf-8-sig")
+        st.dataframe(df_output)
+        
+        csv = df_output.to_csv(index=False).encode("utf-8-sig")
         st.download_button("📥 결과 다운로드", data=csv, file_name="prediction_result.csv", mime="text/csv")
+
